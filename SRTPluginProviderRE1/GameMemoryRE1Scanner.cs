@@ -67,7 +67,7 @@ namespace SRTPluginProviderRE1
                 case GameVersion.REmake_Latest:
                     {
                         pointerGameState = 0x0097C9C0;
-                        pointerAddressHP = 0x009E41BC;
+                        pointerAddressHP = 0x9E41BC;
 
                         return true;
                     }
@@ -88,30 +88,50 @@ namespace SRTPluginProviderRE1
 
         internal unsafe IGameMemoryRE1 Refresh()
         {
-            if (SafeReadByteArray(PointerPlayerHP.Address, sizeof(GamePlayerHP), out byte[] gamePlayerHpBytes))
-            {
-                var playerHp = GamePlayerHP.AsStruct(gamePlayerHpBytes);
-                gameMemoryValues._playerMaxHealth = playerHp.Max;
-                gameMemoryValues._playerCurrentHealth = playerHp.Current;
-            }
+            fixed (int* p = &gameMemoryValues._playerMaxHealth)
+                PointerPlayerHP.TryDerefInt(0x13C0, p);
 
-            if (SafeReadByteArray(PointerGameState.Address, sizeof(GameStates), out byte[] gameStateBytes))
-            {
-                var gameStates = GameStates.AsStruct(gameStateBytes);
-                gameMemoryValues._mGameMode = gameStates.GameMode;
-                gameMemoryValues._mDifficulty = gameStates.Difficulty;
-                gameMemoryValues._mShadowQuality = gameStates.ShadowQuality;
-                gameMemoryValues._mStartPlayer = gameStates.StartPlayer;
-                gameMemoryValues._mCostumeID = gameStates.CostumeID;
-                gameMemoryValues._mChangePlayerID = gameStates.ChangePlayerID;
-                gameMemoryValues._mDisplayMode = gameStates.DisplayMode;
-                gameMemoryValues._mVoiceType = gameStates.VoiceType;
-                gameMemoryValues._mIsSubWepAuto = gameStates.IsSubWepAuto;
-                gameMemoryValues._mFrameCounter = gameStates.FrameCounter;
-                gameMemoryValues._mPlayTime = gameStates.PlayTime;
-                gameMemoryValues._mIsStartGame = gameStates.IsStartGame;
-                gameMemoryValues._mIsLoadGame = gameStates.IsLoadGame;
-            }
+            fixed (int* p = &gameMemoryValues._playerCurrentHealth)
+                PointerPlayerHP.TryDerefInt(0x13BC, p);
+
+            fixed (int* p = &gameMemoryValues._mGameMode)
+                PointerGameState.TryDerefInt(0x20, p);
+
+            fixed (int* p = &gameMemoryValues._mDifficulty)
+                PointerGameState.TryDerefInt(0x24, p);
+
+            fixed (int* p = &gameMemoryValues._mStartPlayer)
+                PointerGameState.TryDerefInt(0x5110, p);
+
+            fixed (int* p = &gameMemoryValues._mCostumeID)
+                PointerGameState.TryDerefInt(0x5114, p);
+
+            fixed (int* p = &gameMemoryValues._mChangePlayerID)
+                PointerGameState.TryDerefInt(0x5118, p);
+
+            fixed (int* p = &gameMemoryValues._mDisplayMode)
+                PointerGameState.TryDerefInt(0x511C, p);
+
+            fixed (int* p = &gameMemoryValues._mVoiceType)
+                PointerGameState.TryDerefInt(0x5120, p);
+
+            fixed (int* p = &gameMemoryValues._mShadowQuality)
+                PointerGameState.TryDerefInt(0x5104, p);
+
+            fixed (int* p = &gameMemoryValues._mIsSubWepAuto)
+                PointerGameState.TryDerefInt(0x5128, p);
+
+            fixed (float* p = &gameMemoryValues._mFrameCounter)
+                PointerGameState.TryDerefFloat(0xE4738, p);
+
+            fixed (float* p = &gameMemoryValues._mPlayTime)
+                PointerGameState.TryDerefFloat(0xE474C, p);
+
+            fixed (byte* p = &gameMemoryValues._mIsStartGame)
+                PointerGameState.TryDerefByte(0xE477E, p);
+
+            fixed (byte* p = &gameMemoryValues._mIsLoadGame)
+                PointerGameState.TryDerefByte(0xE477C, p);
 
             if (gameMemoryValues._inventory == null)
             {
