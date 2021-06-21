@@ -39,8 +39,8 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ProcessMemory\ProcessMemory\ProcessMemory.csproj" />
-    <ProjectReference Include="..\..\SRTHost\SRTPluginBase\SRTPluginBase.csproj">
+    <ProjectReference Include="..\..\..\Squirrelies\ProcessMemory\ProcessMemory\ProcessMemory.csproj" />
+    <ProjectReference Include="..\..\..\Squirrelies\SRTHost\SRTPluginBase\SRTPluginBase.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
