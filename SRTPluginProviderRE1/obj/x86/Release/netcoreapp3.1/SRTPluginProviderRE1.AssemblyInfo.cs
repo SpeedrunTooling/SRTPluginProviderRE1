@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2021 Travis J. Gutjahr")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("A provider plugin for the SRT Host to provide memory values to other plugins.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.2.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.2.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Resident Evil 1 Memory Provider Plugin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SRTPluginProviderRE1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.1.0.0")]

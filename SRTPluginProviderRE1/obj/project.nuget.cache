@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "spX3sQJ0k0GH4Msyw/g8acrZ0CsObXtqJkiOGeCR2Rhv5blZr47dlfLDunN8D+c1UgsuCD/EdJiDKMhmaPSgVA==",
+  "dgSpecHash": "ETi4/cvlGvNlGmVOr35pjEnl7IHLYUuQ+K/YRgYUXk9akuTALeT8NldDYDldN5fs2ecpNYxdo8kEgVmEzMl9Vg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\video\\source\\repos\\SRTPluginProviderRE1\\SRTPluginProviderRE1\\SRTPluginProviderRE1.csproj",
+  "projectFilePath": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE1\\SRTPluginProviderRE1\\SRTPluginProviderRE1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\video\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512"
   ],

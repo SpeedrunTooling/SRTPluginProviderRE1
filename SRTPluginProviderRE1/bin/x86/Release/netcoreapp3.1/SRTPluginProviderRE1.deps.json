@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "SRTPluginProviderRE1/1.1.2": {
+      "SRTPluginProviderRE1/1.1.2.0": {
         "dependencies": {
           "ProcessMemory32": "2.3.3",
           "SRTPluginBase": "2.4.3"
@@ -34,7 +34,7 @@
     }
   },
   "libraries": {
-    "SRTPluginProviderRE1/1.1.2": {
+    "SRTPluginProviderRE1/1.1.2.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
