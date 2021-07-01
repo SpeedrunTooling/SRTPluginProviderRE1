@@ -24,7 +24,7 @@
           "bin/placeholder/ProcessMemory32.dll": {}
         }
       },
-      "SRTPluginBase/2.4.3": {
+      "SRTPluginBase/2.4.4": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
@@ -67,7 +67,7 @@
       "path": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj",
       "msbuildProject": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj"
     },
-    "SRTPluginBase/2.4.3": {
+    "SRTPluginBase/2.4.4": {
       "type": "project",
       "path": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj",
       "msbuildProject": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj"
@@ -76,7 +76,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "ProcessMemory32 >= 2.3.3",
-      "SRTPluginBase >= 2.4.3"
+      "SRTPluginBase >= 2.4.4"
     ]
   },
   "packageFolders": {

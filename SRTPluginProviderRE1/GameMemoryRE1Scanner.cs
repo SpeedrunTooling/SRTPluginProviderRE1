@@ -54,7 +54,7 @@ namespace SRTPluginProviderRE1
                 PointerPlayerHP = new MultilevelPointer(
                     memoryAccess,
                     IntPtr.Add(BaseAddress, pointerAddressHP),
-                    0x1C4,
+                    0x1C8,
                     0x30
                 );
             }
@@ -68,7 +68,6 @@ namespace SRTPluginProviderRE1
                     {
                         pointerGameState = 0x0097C9C0;
                         pointerAddressHP = 0x9E41BC;
-
                         return true;
                     }
             }
