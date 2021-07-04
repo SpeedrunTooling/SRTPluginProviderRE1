@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "aLVt96Fh5KXy1zoB7rjWJ7EZS2+B4PFOiy7bIjLn+PWI6skuwZ/w+eWaZit2w5YF+YeclOahZ/tdprQ+ZMoEcA==",
+  "dgSpecHash": "7lzLhZ0wqAwJURM+l5Q1iKtHjFJNP28OQYcuqQA5VZhhyipmK5vDtyj5LJcJVTBjmquoauOtzJaNQQTPao3NRw==",
   "success": true,
   "projectFilePath": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE1\\SRTPluginProviderRE1\\SRTPluginProviderRE1.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\video\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512"
+    "C:\\Users\\video\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
+    "C:\\Users\\video\\.nuget\\packages\\system.text.json\\5.0.2\\system.text.json.5.0.2.nupkg.sha512"
   ],
   "logs": []
 }

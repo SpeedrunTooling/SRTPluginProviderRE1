@@ -5,6 +5,7 @@ namespace SRTPluginProviderRE1
     public interface IGameMemoryRE1
     {
         // Raw data properties.
+        string GameName { get; }
         string VersionInfo { get; }
         int PlayerCurrentHealth { get; set; }
         int PlayerMaxHealth { get; set; }
