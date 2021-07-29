@@ -7,6 +7,9 @@ namespace SRTPluginProviderRE1
 {
     internal class GameMemoryRE1Scanner : IDisposable
     {
+        private readonly int MAX_ITEMS = 10;
+        private readonly int MAX_ENTITIES = 32;
+
         // Variables
         private ProcessMemoryHandler memoryAccess;
         private GameMemoryRE1 gameMemoryValues;
@@ -22,6 +25,9 @@ namespace SRTPluginProviderRE1
         private IntPtr BaseAddress { get; set; }
         private MultilevelPointer PointerGameState { get; set; }
         private MultilevelPointer PointerPlayerHP { get; set; }
+        private MultilevelPointer[] PointerEnemyHP { get; set; }
+
+        private GameInventoryEntry EmptySlot = new GameInventoryEntry();
 
         /// <summary>
         /// 
@@ -48,15 +54,38 @@ namespace SRTPluginProviderRE1
             {
                 BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_32BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn't.
                 
-                // Setup the pointers.
+                // GET GAMEPLAY
                 PointerGameState = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerGameState));
                 
+                // GET PLAYER
                 PointerPlayerHP = new MultilevelPointer(
                     memoryAccess,
                     IntPtr.Add(BaseAddress, pointerAddressHP),
                     0x1C8,
                     0x30
                 );
+
+                // GET ENEMIES
+                PointerEnemyHP = new MultilevelPointer[MAX_ENTITIES];
+                gameMemoryValues._enemyHealth = new GameEnemyHP[MAX_ENTITIES];
+                var position = 0;
+                for (var i = 0; i < PointerEnemyHP.Length; i++)
+                {
+                    position = (i * 0x8) + 0x18;
+                    gameMemoryValues._enemyHealth[i] = new GameEnemyHP();
+                    PointerEnemyHP[i] = new MultilevelPointer(
+                        memoryAccess,
+                        IntPtr.Add(BaseAddress, pointerAddressHP),
+                        0x6CC,
+                        position,
+                        0xFDC
+                    );
+                }
+
+                // GET ITEMS
+                gameMemoryValues._inventory = new GameInventoryEntry[MAX_ITEMS];
+                for (int i = 0; i < gameMemoryValues._inventory.Length; ++i)
+                    gameMemoryValues._inventory[i] = new GameInventoryEntry();
             }
         }
 
@@ -83,69 +112,41 @@ namespace SRTPluginProviderRE1
         {
             PointerGameState.UpdatePointers();
             PointerPlayerHP.UpdatePointers();
+            for (var i = 0; i < PointerEnemyHP.Length; i++)
+            {
+                PointerEnemyHP[i].UpdatePointers();
+            }
         }
 
-        internal unsafe IGameMemoryRE1 Refresh()
+        internal IGameMemoryRE1 Refresh()
         {
-            fixed (int* p = &gameMemoryValues._playerMaxHealth)
-                PointerPlayerHP.TryDerefInt(0x13C0, p);
+            gameMemoryValues._player = PointerPlayerHP.Deref<GamePlayer>(0x13BC);
 
-            fixed (int* p = &gameMemoryValues._playerCurrentHealth)
-                PointerPlayerHP.TryDerefInt(0x13BC, p);
+            gameMemoryValues._mGameMode = PointerGameState.DerefInt(0x20);
+            gameMemoryValues._mDifficulty = PointerGameState.DerefInt(0x24);
+            gameMemoryValues._mStartPlayer = PointerGameState.DerefInt(0x5110);
+            gameMemoryValues._mCostumeID = PointerGameState.DerefInt(0x5114);
+            gameMemoryValues._mChangePlayerID = PointerGameState.DerefInt(0x5118);
+            gameMemoryValues._mDisplayMode = PointerGameState.DerefInt(0x511C);
+            gameMemoryValues._mVoiceType = PointerGameState.DerefInt(0x5120);
+            gameMemoryValues._mShadowQuality = PointerGameState.DerefInt(0x5104);
+            gameMemoryValues._mIsSubWepAuto = PointerGameState.DerefInt(0x5128);
+            gameMemoryValues._mFrameCounter = PointerGameState.DerefFloat(0xE4738);
+            gameMemoryValues._mPlayTime = PointerGameState.DerefFloat(0xE474C);
+            gameMemoryValues._mIsStartGame = PointerGameState.DerefByte(0xE477E);
+            gameMemoryValues._mIsLoadGame = PointerGameState.DerefByte(0xE477C);
 
-            fixed (int* p = &gameMemoryValues._mGameMode)
-                PointerGameState.TryDerefInt(0x20, p);
-
-            fixed (int* p = &gameMemoryValues._mDifficulty)
-                PointerGameState.TryDerefInt(0x24, p);
-
-            fixed (int* p = &gameMemoryValues._mStartPlayer)
-                PointerGameState.TryDerefInt(0x5110, p);
-
-            fixed (int* p = &gameMemoryValues._mCostumeID)
-                PointerGameState.TryDerefInt(0x5114, p);
-
-            fixed (int* p = &gameMemoryValues._mChangePlayerID)
-                PointerGameState.TryDerefInt(0x5118, p);
-
-            fixed (int* p = &gameMemoryValues._mDisplayMode)
-                PointerGameState.TryDerefInt(0x511C, p);
-
-            fixed (int* p = &gameMemoryValues._mVoiceType)
-                PointerGameState.TryDerefInt(0x5120, p);
-
-            fixed (int* p = &gameMemoryValues._mShadowQuality)
-                PointerGameState.TryDerefInt(0x5104, p);
-
-            fixed (int* p = &gameMemoryValues._mIsSubWepAuto)
-                PointerGameState.TryDerefInt(0x5128, p);
-
-            fixed (float* p = &gameMemoryValues._mFrameCounter)
-                PointerGameState.TryDerefFloat(0xE4738, p);
-
-            fixed (float* p = &gameMemoryValues._mPlayTime)
-                PointerGameState.TryDerefFloat(0xE474C, p);
-
-            fixed (byte* p = &gameMemoryValues._mIsStartGame)
-                PointerGameState.TryDerefByte(0xE477E, p);
-
-            fixed (byte* p = &gameMemoryValues._mIsLoadGame)
-                PointerGameState.TryDerefByte(0xE477C, p);
-
-            if (gameMemoryValues._inventory == null)
+            for (var i = 0; i < ((gameMemoryValues.mStartPlayer == CharacterEnumeration.Jill) ? 10 : 8); i++)
             {
-                gameMemoryValues._inventory = new InventoryEntry[10];
-                for (int i = 0; i < gameMemoryValues._inventory.Length; ++i)
-                    gameMemoryValues._inventory[i] = new InventoryEntry() { _data = new int[2], SlotPosition = i, IsEquipped = (gameMemoryValues.mStartPlayer == CharacterEnumeration.Jill && i == 9) || ((gameMemoryValues.mStartPlayer == CharacterEnumeration.Chris || gameMemoryValues.mStartPlayer == CharacterEnumeration.Rebecca) && i == 7) };
-            }
-            for (int i = 0; i < ((gameMemoryValues.mStartPlayer == CharacterEnumeration.Jill) ? 10 : 8); ++i) // Ten (10) for Jill, eight (8) for Chris and Rebecca. Characters have two (2) extra slots for storing the special item (lock pick or lighter) and equipped weapon information.
-            {
-                fixed (int* p = &gameMemoryValues._inventory[i]._data[0])
+                if (gameMemoryValues.mStartPlayer != CharacterEnumeration.Jill && i > 8)
                 {
-                    PointerGameState.TryDerefInt(0x38 + (i * 8), p);
-                    PointerGameState.TryDerefInt(0x38 + (i * 8) + 4, p + 1);
+                    gameMemoryValues._inventory[i] = EmptySlot;
                 }
+                gameMemoryValues._inventory[i] = PointerGameState.Deref<GameInventoryEntry>(0x38 + (i * 0x8));
             }
+
+            for (var i = 0; i < PointerEnemyHP.Length; i++)
+                gameMemoryValues._enemyHealth[i] = PointerEnemyHP[i].Deref<GameEnemyHP>(0x13BC);
 
             HasScanned = true;
             return gameMemoryValues;
