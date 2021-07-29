@@ -1,21 +1,21 @@
-﻿using System;
-using System.Globalization;
+﻿using SRTPluginProviderRE1.Structs.GameStructs;
+using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 
 namespace SRTPluginProviderRE1
 {
     public struct GameMemoryRE1 : IGameMemoryRE1
     {
+        private const string IGT_TIMESPAN_STRING_FORMAT = @"hh\:mm\:ss";
+        public string GameName => "RE1R";
         public string VersionInfo => FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
-        public int PlayerCurrentHealth { get => _playerCurrentHealth; set => _playerCurrentHealth = value; }
-        internal int _playerCurrentHealth;
+        public GamePlayer Player { get => _player; set => _player = value; }
+        internal GamePlayer _player;
 
-        public int PlayerMaxHealth { get => _playerMaxHealth; set => _playerMaxHealth = value; }
-        internal int _playerMaxHealth;
-
-        private const string IGT_TIMESPAN_STRING_FORMAT = @"hh\:mm\:ss\.fff";
+        public string PlayerName => string.Format("{0}: ", mStartPlayer.ToString());
 
         public int mGameMode { get => _mGameMode; set => _mGameMode = value; }
         internal int _mGameMode;
@@ -56,8 +56,11 @@ namespace SRTPluginProviderRE1
         public byte mIsLoadGame { get => _mIsLoadGame; set => _mIsLoadGame = value; }
         internal byte _mIsLoadGame;
 
-        public InventoryEntry[] Inventory { get => _inventory; set => _inventory = value; }
-        internal InventoryEntry[] _inventory;
+        public GameInventoryEntry[] Inventory { get => _inventory; set => _inventory = value; }
+        internal GameInventoryEntry[] _inventory;
+
+        public GameEnemyHP[] EnemyHealth { get => _enemyHealth; set => _enemyHealth = value; }
+        internal GameEnemyHP[] _enemyHealth;
 
         public TimeSpan IGTTimeSpan
         {
