@@ -2,7 +2,8 @@
 {
     public enum GameVersion : int
     {
-        Unknown = 0,
-        REmake_Latest = int.MaxValue
+        Unknown,
+        WW_20181019_1,
+        WW_20230801_1,
     }
 }

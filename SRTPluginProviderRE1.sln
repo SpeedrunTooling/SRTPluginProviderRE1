@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRTPluginProviderRE1", "SRTPluginProviderRE1\SRTPluginProviderRE1.csproj", "{069FB9C4-5A9E-4171-BB3B-9C76BACE0E98}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRTPluginBase", "..\..\Squirrelies\SRTHost\SRTPluginBase\SRTPluginBase.csproj", "{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRTPluginBase", "..\..\SpeedRunTool\SRTHost\SRTPluginBase\SRTPluginBase.csproj", "{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessMemory", "..\..\Squirrelies\ProcessMemory\ProcessMemory\ProcessMemory.csproj", "{DC53E43A-1191-4EA9-947D-4B7D026AA149}"
 EndProject

@@ -93,10 +93,11 @@ namespace SRTPluginProviderRE1
         {
             switch (version)
             {
-                case GameVersion.REmake_Latest:
+                case GameVersion.WW_20230801_1:
+                case GameVersion.WW_20181019_1:
                     {
                         pointerGameState = 0x0097C9C0;
-                        pointerAddressHP = 0x9E41BC;
+                        pointerAddressHP = 0x009E41BC;
                         return true;
                     }
             }
