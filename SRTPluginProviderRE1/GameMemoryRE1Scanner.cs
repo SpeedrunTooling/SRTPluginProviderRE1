@@ -8,7 +8,7 @@ namespace SRTPluginProviderRE1
     internal class GameMemoryRE1Scanner : IDisposable
     {
         private readonly int MAX_ITEMS = 10;
-        private readonly int MAX_ENTITIES = 32;
+        private readonly int MAX_ENTITIES = 48 - 1;
 
         // Variables
         private ProcessMemoryHandler memoryAccess;
@@ -25,7 +25,7 @@ namespace SRTPluginProviderRE1
         private IntPtr BaseAddress { get; set; }
         private MultilevelPointer PointerGameState { get; set; }
         private MultilevelPointer PointerPlayerHP { get; set; }
-        private MultilevelPointer[] PointerEnemyHP { get; set; }
+        private MultilevelPointer[] PointerEntities { get; set; }
 
         private GameInventoryEntry EmptySlot = new GameInventoryEntry();
 
@@ -61,24 +61,19 @@ namespace SRTPluginProviderRE1
                 PointerPlayerHP = new MultilevelPointer(
                     memoryAccess,
                     IntPtr.Add(BaseAddress, pointerAddressHP),
-                    0x1C8,
-                    0x30
+                    0x14C
                 );
 
                 // GET ENEMIES
-                PointerEnemyHP = new MultilevelPointer[MAX_ENTITIES];
+                PointerEntities = new MultilevelPointer[MAX_ENTITIES];
                 gameMemoryValues._enemyHealth = new GameEnemyHP[MAX_ENTITIES];
-                var position = 0;
-                for (var i = 0; i < PointerEnemyHP.Length; i++)
+                for (int i = 0; i < PointerEntities.Length; ++i)
                 {
-                    position = (i * 0x8) + 0x18;
                     gameMemoryValues._enemyHealth[i] = new GameEnemyHP();
-                    PointerEnemyHP[i] = new MultilevelPointer(
+                    PointerEntities[i] = new MultilevelPointer(
                         memoryAccess,
                         IntPtr.Add(BaseAddress, pointerAddressHP),
-                        0x6CC,
-                        position,
-                        0xFDC
+                        ((i + 1) * 0x8) + 0x14C
                     );
                 }
 
@@ -113,10 +108,8 @@ namespace SRTPluginProviderRE1
         {
             PointerGameState.UpdatePointers();
             PointerPlayerHP.UpdatePointers();
-            for (var i = 0; i < PointerEnemyHP.Length; i++)
-            {
-                PointerEnemyHP[i].UpdatePointers();
-            }
+            for (int i = 0; i < PointerEntities.Length; ++i)
+                PointerEntities[i].UpdatePointers();
         }
 
         internal IGameMemoryRE1 Refresh()
@@ -146,8 +139,8 @@ namespace SRTPluginProviderRE1
                 gameMemoryValues._inventory[i] = PointerGameState.Deref<GameInventoryEntry>(0x38 + (i * 0x8));
             }
 
-            for (var i = 0; i < PointerEnemyHP.Length; i++)
-                gameMemoryValues._enemyHealth[i] = PointerEnemyHP[i].Deref<GameEnemyHP>(0x13BC);
+            for (int i = 0; i < PointerEntities.Length; ++i)
+                gameMemoryValues._enemyHealth[i] = PointerEntities[i].Deref<GameEnemyHP>(0x13BC);
 
             HasScanned = true;
             return gameMemoryValues;
