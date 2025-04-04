@@ -54,7 +54,7 @@ jobs:
         run: |
           echo '::set-output name=solution::${{env.project-name}}.sln'
           echo '::set-output name=project::${{env.project-name}}/${{env.project-name}}.csproj'
-          echo '::set-output name=build-directory::${{env.project-name}}/bin/${{env.platform}}/${{env.buildConfig}}/net8.0/'
+          echo '::set-output name=build-directory::${{env.project-name}}/bin/${{env.platform}}/${{env.buildConfig}}/net5.0/'
 
       # Get the project's version number
       - name: Get project version information
@@ -82,7 +82,7 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
           dotnet-quality: "ga"
 
       # Compiles the plugin
