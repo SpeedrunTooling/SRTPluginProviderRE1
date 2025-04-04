@@ -2,10 +2,12 @@
 using System;
 using System.Diagnostics;
 using SRTPluginProviderRE1.Structs.GameStructs;
+using Windows.Win32.System.ProcessStatus;
+using Windows.Win32;
 
 namespace SRTPluginProviderRE1
 {
-    internal class GameMemoryRE1Scanner : IDisposable
+    internal unsafe class GameMemoryRE1Scanner : IDisposable
     {
         private readonly int MAX_ITEMS = 10;
         private readonly int MAX_ENTITIES = 48 - 1;
@@ -14,15 +16,15 @@ namespace SRTPluginProviderRE1
         private ProcessMemoryHandler memoryAccess;
         private GameMemoryRE1 gameMemoryValues;
         public bool HasScanned;
-        public bool ProcessRunning => memoryAccess != null && memoryAccess.ProcessRunning;
-        public int ProcessExitCode => (memoryAccess != null) ? memoryAccess.ProcessExitCode : 0;
+        public bool ProcessRunning => memoryAccess is not null && memoryAccess.ProcessRunning;
+        public uint ProcessExitCode => (memoryAccess is not null) ? memoryAccess.ProcessExitCode : 0U;
 
         // Pointer Address Variables
-        private int pointerGameState;
-        private int pointerAddressHP;
+        private nint pointerGameState;
+        private nint pointerAddressHP;
 
         // Pointer Classes
-        private IntPtr BaseAddress { get; set; }
+        private FreeLibrarySafeHandle BaseAddress { get; set; }
         private MultilevelPointer PointerGameState { get; set; }
         private MultilevelPointer PointerPlayerHP { get; set; }
         private MultilevelPointer[] PointerEntities { get; set; }
@@ -48,39 +50,44 @@ namespace SRTPluginProviderRE1
             if (!SelectPointerAddresses(GameHashes.DetectVersion(process.MainModule.FileName)))
                 return; // Unknown version.
 
-            int pid = GetProcessId(process).Value;
+            uint pid = GetProcessId(process).Value;
             memoryAccess = new ProcessMemoryHandler(pid);
             if (ProcessRunning)
             {
-                BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_32BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn't.
-                
-                // GET GAMEPLAY
-                PointerGameState = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerGameState));
-                
-                // GET PLAYER
-                PointerPlayerHP = new MultilevelPointer(
-                    memoryAccess,
-                    IntPtr.Add(BaseAddress, pointerAddressHP),
-                    0x14C
-                );
-
-                // GET ENEMIES
-                PointerEntities = new MultilevelPointer[MAX_ENTITIES];
-                gameMemoryValues._enemyHealth = new GameEnemyHP[MAX_ENTITIES];
-                for (int i = 0; i < PointerEntities.Length; ++i)
+                BaseAddress = new FreeLibrarySafeHandle(process.MainModule.BaseAddress, false);
+                // Broken, might be missing something for 32-bit support. Access violation error upon execution of this line.
+                //BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, ENUM_PROCESS_MODULES_EX_FLAGS.LIST_MODULES_32BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn't.
                 {
-                    gameMemoryValues._enemyHealth[i] = new GameEnemyHP();
-                    PointerEntities[i] = new MultilevelPointer(
-                        memoryAccess,
-                        IntPtr.Add(BaseAddress, pointerAddressHP),
-                        ((i + 1) * 0x8) + 0x14C
-                    );
-                }
+                    nint baseAddressNIntPtr = BaseAddress.DangerousGetHandle();
 
-                // GET ITEMS
-                gameMemoryValues._inventory = new GameInventoryEntry[MAX_ITEMS];
-                for (int i = 0; i < gameMemoryValues._inventory.Length; ++i)
-                    gameMemoryValues._inventory[i] = new GameInventoryEntry();
+                    // GET GAMEPLAY
+                    PointerGameState = new MultilevelPointer(memoryAccess, (nint*)(baseAddressNIntPtr + pointerGameState));
+
+                    // GET PLAYER
+                    PointerPlayerHP = new MultilevelPointer(
+                        memoryAccess,
+                        (nint*)(baseAddressNIntPtr + pointerAddressHP),
+                        0x14C
+                    );
+
+                    // GET ENEMIES
+                    PointerEntities = new MultilevelPointer[MAX_ENTITIES];
+                    gameMemoryValues._enemyHealth = new GameEnemyHP[MAX_ENTITIES];
+                    for (int i = 0; i < PointerEntities.Length; ++i)
+                    {
+                        gameMemoryValues._enemyHealth[i] = new GameEnemyHP();
+                        PointerEntities[i] = new MultilevelPointer(
+                            memoryAccess,
+                            (nint*)(baseAddressNIntPtr + pointerAddressHP),
+                            ((i + 1) * 0x8) + 0x14C
+                        );
+                    }
+
+                    // GET ITEMS
+                    gameMemoryValues._inventory = new GameInventoryEntry[MAX_ITEMS];
+                    for (int i = 0; i < gameMemoryValues._inventory.Length; ++i)
+                        gameMemoryValues._inventory[i] = new GameInventoryEntry();
+                }
             }
         }
 
@@ -88,6 +95,7 @@ namespace SRTPluginProviderRE1
         {
             switch (version)
             {
+                case GameVersion.WW_20250205_1:
                 case GameVersion.WW_20230801_1:
                 case GameVersion.WW_20181019_1:
                     {
@@ -146,18 +154,16 @@ namespace SRTPluginProviderRE1
             return gameMemoryValues;
         }
 
-        private int? GetProcessId(Process process) => process?.Id;
+        private uint? GetProcessId(Process process) => (uint?)process?.Id;
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
-        private unsafe bool SafeReadByteArray(IntPtr address, int size, out byte[] readBytes)
+        private unsafe bool SafeReadByteArray(nuint address, nuint size, out byte[] readBytes)
         {
             readBytes = new byte[size];
             fixed (byte* p = readBytes)
-            {
                 return memoryAccess.TryGetByteArrayAt(address, size, p);
-            }
         }
 
         protected virtual void Dispose(bool disposing)

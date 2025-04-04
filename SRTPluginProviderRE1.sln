@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRTPluginProviderRE1", "SRT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRTPluginBase", "..\..\SpeedRunTool\SRTHost\SRTPluginBase\SRTPluginBase.csproj", "{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessMemory", "..\..\Squirrelies\ProcessMemory\ProcessMemory\ProcessMemory.csproj", "{DC53E43A-1191-4EA9-947D-4B7D026AA149}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,10 +21,6 @@ Global
 		{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}.Debug|x86.Build.0 = Debug|Any CPU
 		{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}.Release|x86.ActiveCfg = Release|Any CPU
 		{A6B6DD21-AC87-4AD5-832E-BD3BDBD6270A}.Release|x86.Build.0 = Release|Any CPU
-		{DC53E43A-1191-4EA9-947D-4B7D026AA149}.Debug|x86.ActiveCfg = Debug|x86
-		{DC53E43A-1191-4EA9-947D-4B7D026AA149}.Debug|x86.Build.0 = Debug|x86
-		{DC53E43A-1191-4EA9-947D-4B7D026AA149}.Release|x86.ActiveCfg = Release|x86
-		{DC53E43A-1191-4EA9-947D-4B7D026AA149}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
